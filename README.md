@@ -26,7 +26,7 @@ AWS Certified Solutions Architect Associate(SAA-C03) 자격증 취득을 위한 
 | 유진 | 국혜경 | 홍준혁 | 임형규 | 
 |:--------:|:-------:| :-------:| :-------:| 
 |<img width="150" src="https://github.com/objet-team/objet-backend/assets/94737714/7a0a7377-9533-43da-814b-3118cbe47a40">| <img width="150" src = "https://github.com/objet-team/objet-backend/assets/94737714/b7fc017c-7c90-4056-b9dd-049b7f994322"> | <img width="150" src=""> | <img width="150" src = "https://github.com/ssuperpower-developer/design-pattern-study/assets/97347625/659d9dfd-6bf1-40f0-9a16-5197e33cd46f">
-| [HI-JIN2](https://github.com/HI-JIN2) | [k0000k](https://github.com/k0000k)  | [홍준혁](https://github.com/user1) | [Gusionling](https://github.com/Gusionling)
+| [HI-JIN2](https://github.com/HI-JIN2) | [k0000k](https://github.com/k0000k)  | [Joon9750](https://github.com/Joon9750) | [Gusionling](https://github.com/Gusionling)
 <br>
 
 ## 📅 스터디 일정
