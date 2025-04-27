@@ -1,0 +1,101 @@
+
+## 🏢 Amazon EC2 개요
+
+EC2는 Elastic Compute Cloud의 약자로, AWS에서 가장 큰 인기를 끌고 있는 서비스이다.
+
+
+#### 인스턴스 만들기 
+AMI 설정 : 원하는 os 고르기
+인스턴스 type 결정 : t2.mico <- 컴퓨터 스팩 고르기
+key pair : ssh 접근할 때 필요함 (윈도우 7,8 제외하면 .pem 으로 만든다 .ppk 는 옛날 버전에서 ssh 접속하기 위해 선택 )
+user data : instance 만들때 인스턴스에서 실행할 코드들로 작성이 된다. (인스턴스 생명주기에서 딱 한번 실행이 된다.)
+
+```sh
+#!/bin/bash
+
+# Use this for your user data (script from top to bottom)
+
+# install httpd (Linux 2 version)
+
+yum update -y
+
+yum install -y httpd
+
+systemctl start httpd
+
+systemctl enable httpd
+
+echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
+```
+
+이런 설정들을 넣어줄 수 있다.
+
+인스턴스를 중지하면 aws 가 처음에 부여해주는 public IP 주소가 바뀌게 된다. (private 주소는 바뀌지 않는다.)
+
+
+#### 인스턴스 타입
+```plain text
+m5.2xlarge
+```
+
+- m : 인스턴스의 클래스이다. 
+- 5 : generation이다. 
+- 2xlarge : 인스턴스 클래스 안에서의 크기이다. 
+
+#### ssh
+
+명령줄 인터페이스 도구이다. 
+터미널이나 명령줄을 이용해서 원격 머신이나 서버를 제어할 수 있게 해준다. 
+![사진1](./img/ec2-1.png)
+마치 우리 컴퓨터가 ec2 컴퓨터 안에 있는 것처럼 보이게 해준다. 
+
+- Ec2 Instance Connect 가 있는데 이는 ==**브라우저**==에서 인스턴스에 ssh 접속을 가능하게 해주는 것이다. 이 방법은 ssh 키가 필요가 없다, aws 자동으로 임시 ssh 키를 생성해주고 연결할 때 사용한다. 
+
+EC2에서 aws cli 를 이용하여 작업을 수행하고자 할 때, 명령어들을 치면 aws configure로 자격 증명을 하라고 나온다. 하지만 이때 이러한 방식으로 access key와 password를 입력한다면 이는 보안상 큰 문제를 일으킬 수 있다. 
+그래서 EC2에 IAM role을 부여하는 것이다.
+
+Action -> security -> IAM 역할 수정을 누르면 IAM role을 부여할 수 있다.
+
+![사진2](./img/ec2-2.png)
+
+DemoRoleEc2가 부여된 것을 볼 수 있다. -> aws configure을 실행하지 않아도 IAM 역할을 연결 후에 
+```
+aws iam list-users
+```
+를 입력하면 작동을 하는 것을 알 수 있다. 
+
+![사진3](./img/ec2-3.png)
+
+### 인스턴스 구매 옵션
+
+
+전용 인스턴스란 자신만의 인스턴스를 자신만의 하드웨어를 갖는다는 것인 반면에, 전용 호스트는 물리적 서버 자체에 대한 접근권을 갖고 낮은 수준의 하드웨어에 대한 가시성을 제공해준다. 
+
+
+
+#### 💲 AWS의 IPv4 주소 요금 - 주소도 이제는 돈이다!
+외부 컴퓨터에서 aws 서비스에 접속해야하는 경우가 있다. rds 처럼 말이다. 하지만 이 경우에는 이제 돈이 나간다. 외부 컴퓨터에서 접속할 수 있다는 것은 public ipv4 주소가 부여가 된 것인데 aws에서는 24년부터 ipv4 public 주소가 한달에 750을 넘겨버리면 돈이 나가게 되어버렸다. 
+
+-> rds나 Load balancer를 실습할 때만 켜놓고 필요 없어진다면 바로 바로 지우도록 하자 
+
+aws 양아치 아니냐? <- 약간의 이유는 있다. ipv6로 이전하기 위해서이다. 하지만 아직 인터넷 서비스들이 ipv6를 지원하지 않는 곳이 많아 현실적으로 어려운 부분이 있다. 
+
+billing 보고서도 잘 봐라 
+
+
+#### 🏆 스팟 인스턴스 자세히 알아보기
+
+스팟 인스턴스의 가격은 az에 따라 다르다. 
+![사진4](./img/ec2-4.png)
+스팩을 결정하고 기간을 정할 수 있다. 
+요청
+- 스팟인스턴스 일회성 요청
+	- Spot Request가 사라져버린다. 
+- 영구 인스턴스 요청 
+	- Spot request가 사라지지 않고 내가 인스턴스를 사용할 수 있게 되면 자동으로 사용할 수 있게 해준다. 
+
+스팟 인스턴스를 종료하기 위해서는 
+spot request를 먼저 취소하고 관련 스팟 인스턴스를 종료해야 비로소 종료가 된다. 스팟 인스턴스를 먼저 종료하게 되면 AWS는 spot request로 다시 돌아가서 Spot 인스턴스를 다시 시작시켜 버린다. 
+
+#### Spot Fleets
+인스턴스 세트를 정의하는 방법이다. 플릿이 무리라는 뜻이다. 
